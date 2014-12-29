@@ -30,7 +30,8 @@ from email.Utils import COMMASPACE, formatdate
 from email import Encoders
 
 
-current_date = datetime.datetime.now().strftime("%Y-%m-%d_%Hh%Mm%Ss")
+current_date = datetime.datetime.now().strftime("%Y-%m-%d")
+current_time = datetime.datetime.now().strftime("%Hh%Mm%Ss")
 db_file = "mokaddict.sqlite"
 report_file = os.path.dirname(os.path.abspath(__file__))+"/../backup/mokaddict.report."+current_date+".csv"
 sender = "matthieu.cattin@cern.ch"
@@ -85,6 +86,8 @@ cur.execute(''' SELECT * FROM addicts ''')
 users = cur.fetchall()
 
 # Get consumption per user and write to file
+f.write("Date, "+current_date+"\n")
+f.write("Time, "+current_time+"\n")
 f.write("User, Consumption\n")
 for user in users:
     cur.execute(''' SELECT COUNT(*) FROM kfe_log WHERE rfid IN ( SELECT rfid FROM uids WHERE user_id LIKE ( SELECT id FROM addicts WHERE id LIKE ? ) ) AND auth='TRUE' ''',(user[0],))
@@ -105,7 +108,7 @@ for user in users:
 
 # Send email
 subject = "Coffee consumption report - %s"%current_date
-body = "Hi, this is an automated report.\n Please find attached the coffee consumption report generated on:\n%s\n\nYour MokAddict server!"%(current_date)
+body = "Hi,\nThis is an automated report.\nPlease find attached the coffee consumption report generated on:\n  %s %s\n\nYour MokAddict server!"%(current_date, current_time)
 send_mail(sender, recipients, subject, body, [report_file])
 
 ################################################################################
