@@ -47,14 +47,14 @@ void initNfcShield(){
   
   uint32_t versiondata = nfc.getFirmwareVersion();
   if (! versiondata) {
-    Serial.print("Didn't find PN53x board");
+    Serial.print(F("Didn't find PN53x board"));
     setLed(M1_LED, LED_RED);
     setLed(M1_LED, LED_RED);
     while (1); // halt
   }
-  Serial.print("Found chip PN5"); Serial.println((versiondata>>24) & 0xFF, HEX); 
-  Serial.print("Firmware ver. "); Serial.print((versiondata>>16) & 0xFF, DEC); 
-  Serial.print('.'); Serial.println((versiondata>>8) & 0xFF, DEC);
+  Serial.print(F("Found chip PN5")); Serial.println((versiondata>>24) & 0xFF, HEX); 
+  Serial.print(F("Firmware ver. ")); Serial.print((versiondata>>16) & 0xFF, DEC); 
+  Serial.print(F(".")); Serial.println((versiondata>>8) & 0xFF, DEC);
   
   nfc.SAMConfig(); // configure board to read RFID tags
 }
@@ -72,18 +72,18 @@ String readUid(){
   
   if (success) {
     // Display some basic information about the card
-    Serial.println("Found an ISO14443A card");
-    Serial.print("  UID Length: ");Serial.print(uidLength, DEC);Serial.println(" bytes");
+    Serial.println(F("Found an ISO14443A card"));
+    Serial.print(F("  UID Length: "));Serial.print(uidLength, DEC);Serial.println(F(" bytes"));
     
     if (uidLength == 4 || uidLength == 7)
     {
       rfid_uid = uid2string(uid, uidLength);
-      Serial.print("  UID Value: "); Serial.println(rfid_uid);
+      Serial.print(F("  UID Value: ")); Serial.println(rfid_uid);
     }
   }
   /*
   else {
-     Serial.println("Ooops ... failed to read the card!");
+     Serial.println(F("Ooops ... failed to read the card!"));
      setLed(M1_LED, LED_RED);
      setLed(M1_LED, LED_RED);
   }
@@ -106,32 +106,7 @@ mainStates_t m1MainState, m2MainState = MAIN_IDLE;
  **************************************************************************/
 unsigned long m1PreviousMillis, m2PreviousMillis = 0;
 unsigned long m1LedPreviousMillis, m2LedPreviousMillis = 0;
-const long ledBlinkInterval = 200;
-const long rejectedInterval = 4000;
-const long rfidWaitTimeout = 8000;
-const long bridgeTimeout = 3000;
-const long coffeeWaitTimeout = 30000;
-const long coffeeWaitLongTimeout = 180000; // 3 minutes
 
-const unsigned long coffee_1_min = 10000;//10000;
-const unsigned long coffee_2_min = 5500;//5500;
-const unsigned long coffee_2_max = 6500;//6500;
-const unsigned long coffee_3_min = 1000;//1000
-const unsigned long coffee_3_max = 1500;//1500;
-const unsigned long coffee_4_min = 2500;//2500;
-const unsigned long coffee_4_max = 3500;//3500;
-/*
-//======================================
-// Values for manual test
-const unsigned long coffee_1_min = 2000;
-const unsigned long coffee_2_min = 2000;
-const unsigned long coffee_2_max = 5000;
-const unsigned long coffee_3_min = 2000;
-const unsigned long coffee_3_max = 5000;
-const unsigned long coffee_4_min = 2000;
-const unsigned long coffee_4_max = 5000;
-//======================================
-*/
 /**************************************************************************
  * LEDs
  **************************************************************************/
@@ -204,13 +179,13 @@ void InitPinChangeInterrupt(){
   PCICR = 0x1;
   interrupts();
 }
-
+/*
 void print_pcicfg(){
   Serial.print("PCMSK0: 0x");Serial.println(PCMSK0, HEX);
   Serial.print("PCICR : 0x");Serial.println(PCICR, HEX);
   Serial.print("PCIFR : 0x");Serial.println(PCIFR, HEX);   
 }
-
+*/
 void readInputState(){
   newInputState.m1Stat = digitalRead(m1StatPin);
   newInputState.m2Stat = digitalRead(m2StatPin);
@@ -283,10 +258,11 @@ void setup(void) {
   
   // Setup serial port
   Serial.begin(115200);
-  Serial.println("Welcome to MokAddict!");
+  Serial.println(F("Welcome to MokAddict!"));
   
   // Setup communication with Atheros AR9331
   Bridge.begin();
+  Serial.println(F("Linux ready"));
 
   // Setup NFC shield
   initNfcShield();
@@ -305,7 +281,7 @@ void setup(void) {
  **************************************************************************/
 void loop(void) {
   static bool rfid_reader_token = false;
-  static bool m1Bill, m2Bill = false;
+  static bool m1CycleStarted, m2CycleStarted = false;
   static String m1Uid, m2Uid = "";
   unsigned long m1DiffMillis, m2DiffMillis = 0;
   
@@ -326,14 +302,14 @@ void loop(void) {
           rfid_reader_token = true;
           b1Cnt = 0;
           m1PreviousMillis = currentMillis;
-          Serial.println("m1 state: AUTH_USER");
+          Serial.println(F("m1 state: AUTH_USER"));
           m1MainState = AUTH_USER;
         }
         if(0 == newInputState.b1 && 0 == newInputState.b2 && false == rfid_reader_token && MAIN_IDLE == m2MainState){
           rfid_reader_token = true;
           b1Cnt = 0;
           m1PreviousMillis = currentMillis;
-          Serial.println("m1 state: SEND_UID");
+          Serial.println(F("m1 state: SEND_UID"));
           m1MainState = SEND_UID;
         }
         else{
@@ -366,8 +342,8 @@ void loop(void) {
         setLed(M1_LED, LED_OFF);
         setLed(M2_LED, LED_OFF);
         b1Cnt = 0;
-        Serial.println("m1: TIMEOUT");
-        Serial.println("m1 state: MAIN_IDLE");
+        Serial.println(F("m1: TIMEOUT"));
+        Serial.println(F("m1 state: MAIN_IDLE"));
         m1PreviousMillis = currentMillis;
         m1MainState = MAIN_IDLE;
       }
@@ -383,7 +359,7 @@ void loop(void) {
             setLed(M1_LED, LED_OFF);
             setLed(M2_LED, LED_OFF);
             b1Cnt = 0;
-            Serial.println("m1 state: MAIN_IDLE");
+            Serial.println(F("m1 state: MAIN_IDLE"));
             m1PreviousMillis = currentMillis;
             m1MainState = MAIN_IDLE;
           }
@@ -411,8 +387,8 @@ void loop(void) {
         rfid_reader_token = false;
         setLed(M1_LED, LED_OFF);
         b1Cnt = 0;
-        Serial.println("m1: TIMEOUT");
-        Serial.println("m1 state: MAIN_IDLE");
+        Serial.println(F("m1: TIMEOUT"));
+        Serial.println(F("m1 state: MAIN_IDLE"));
         m1MainState = MAIN_IDLE;
       }
       else{
@@ -428,9 +404,9 @@ void loop(void) {
           // Check if the user is registered
           if(check_rfid_uid(m1Uid)){
             // User is registered
-            Serial.println("m1 state: MAKE_COFFEE");
+            Serial.println(F("m1 state: MAKE_COFFEE"));
             m1StatCnt = 0;
-            m1Bill = false;
+            m1CycleStarted = false;
             m1CoffeeState = COFFEE_IDLE;
             setLed(M1_LED, LED_GREEN);
             digitalWrite(m1CtrlPin, HIGH); // Enable machine's buttons
@@ -441,7 +417,7 @@ void loop(void) {
             // User is not registered
             setLed(M1_LED, LED_RED);
             log_user(m1Uid, "FALSE");  // Log user's UID, with authenticated=FALSE
-            Serial.println("m1 state: REJECTED");
+            Serial.println(F("m1 state: REJECTED"));
             m1PreviousMillis = currentMillis;
             m1MainState = REJECTED;
           }
@@ -455,7 +431,7 @@ void loop(void) {
       if(m1DiffMillis >= rejectedInterval) {
         setLed(M1_LED, LED_OFF);
         b1Cnt = 0;
-        Serial.println("m1 state: MAIN_IDLE");
+        Serial.println(F("m1 state: MAIN_IDLE"));
         m1MainState = MAIN_IDLE;
       }
       break;
@@ -463,13 +439,13 @@ void loop(void) {
     case MAKE_COFFEE:
     
       // Timeout if no coffee is made (bigger timeout if cycle as strated)
-      if((m1DiffMillis > coffeeWaitTimeout && false == m1Bill) ||
-        (m1DiffMillis > (coffeeWaitLongTimeout) && true == m1Bill)){
+      if((m1DiffMillis > coffeeWaitTimeout && false == m1CycleStarted) ||
+        (m1DiffMillis > (coffeeWaitLongTimeout) && true == m1CycleStarted)){
         digitalWrite(m1CtrlPin, LOW);  // Disable machine's buttons
         setLed(M1_LED, LED_OFF);
         b1Cnt = 0;
-        Serial.print("m1: TIMEOUT: ");Serial.println(m1DiffMillis, DEC);
-        Serial.println("m1 state: MAIN_IDLE");
+        Serial.print(F("m1: TIMEOUT: "));Serial.println(m1DiffMillis, DEC);
+        Serial.println(F("m1 state: MAIN_IDLE"));
         m1PreviousMillis = currentMillis;
         m1MainState = MAIN_IDLE;
       }
@@ -481,7 +457,7 @@ void loop(void) {
             
             if(1 <= m1StatCnt){
               if(0 == newInputState.m1Stat){
-                m1Bill = true;
+                m1CycleStarted = true;
                 m1PreviousMillis = currentMillis;
                 Serial.print("m1: COFFEE_1  ");Serial.println(m1DiffMillis, DEC);
                 m1CoffeeState = COFFEE_1;
@@ -572,6 +548,7 @@ void loop(void) {
           
             m1CoffeeState = COFFEE_RESET;
             break;
+          }
         }
         break;
         
@@ -582,7 +559,7 @@ void loop(void) {
         digitalWrite(m1CtrlPin, LOW);  // Disable machine's buttons
         log_user(m1Uid, "TRUE");  // Log user's UID, with authenticated=TRUE
         setLed(M1_LED, LED_OFF);
-        Serial.println("m1 state: MAIN_IDLE");
+        Serial.println(F("m1 state: MAIN_IDLE"));
         m1PreviousMillis = currentMillis;
         m1MainState = MAIN_IDLE;
         break;
@@ -591,7 +568,6 @@ void loop(void) {
       
         m1MainState = MAIN_IDLE;
         break;
-    }
   }
   
   /*-------------------------------------------------------------------------
@@ -607,7 +583,7 @@ void loop(void) {
           rfid_reader_token = true;
           b2Cnt = 0;
           m2PreviousMillis = currentMillis;
-          Serial.println("m2 state: AUTH_USER");
+          Serial.println(F("m2 state: AUTH_USER"));
           m2MainState = AUTH_USER;
         }
         else{
@@ -636,8 +612,8 @@ void loop(void) {
         rfid_reader_token = false;
         setLed(M2_LED, LED_OFF);
         b2Cnt = 0;
-        Serial.println("m2: TIMEOUT");
-        Serial.println("m2 state: MAIN_IDLE");
+        Serial.println(F("m2: TIMEOUT"));
+        Serial.println(F("m2 state: MAIN_IDLE"));
         m2MainState = MAIN_IDLE;
       }
       else{
@@ -653,9 +629,9 @@ void loop(void) {
           // Check if the user is registered
           if(check_rfid_uid(m2Uid)){
             // User is registered
-            Serial.println("m2 state: MAKE_COFFEE");
+            Serial.println(F("m2 state: MAKE_COFFEE"));
             m2StatCnt = 0;
-            m2Bill = false;
+            m2CycleStarted = false;
             m2CoffeeState = COFFEE_IDLE;
             setLed(M2_LED, LED_GREEN);
             digitalWrite(m2CtrlPin, HIGH); // Enable machine's buttons
@@ -666,7 +642,7 @@ void loop(void) {
             // User is not registered
             setLed(M2_LED, LED_RED);
             log_user(m2Uid, "FALSE");  // Log user's UID, with authenticated=FALSE
-            Serial.println("m2 state: REJECTED");
+            Serial.println(F("m2 state: REJECTED"));
             m2PreviousMillis = currentMillis;
             m2MainState = REJECTED;
           }
@@ -680,20 +656,20 @@ void loop(void) {
       if(m2DiffMillis >= rejectedInterval) {
         setLed(M2_LED, LED_OFF);
         b2Cnt = 0;
-        Serial.println("m2 state: MAIN_IDLE");
+        Serial.println(F("m2 state: MAIN_IDLE"));
         m2MainState = MAIN_IDLE;
       }
       break;
       
     case MAKE_COFFEE:
       // Timeout if no coffee is made (bigger timeout if cycle as strated)
-      if((m2DiffMillis > coffeeWaitTimeout && false == m2Bill) ||
-        (m2DiffMillis > (coffeeWaitLongTimeout) && true == m2Bill)){
+      if((m2DiffMillis > coffeeWaitTimeout && false == m2CycleStarted) ||
+        (m2DiffMillis > (coffeeWaitLongTimeout) && true == m2CycleStarted)){
         digitalWrite(m2CtrlPin, LOW);  // Disable machine's buttons
         setLed(M2_LED, LED_OFF);
         b2Cnt = 0;
-        Serial.print("m2: TIMEOUT: ");Serial.println(m2DiffMillis, DEC);
-        Serial.println("m2 state: MAIN_IDLE");
+        Serial.print(F("m2: TIMEOUT: "));Serial.println(m2DiffMillis, DEC);
+        Serial.println(F("m2 state: MAIN_IDLE"));
         m2PreviousMillis = currentMillis;
         m2MainState = MAIN_IDLE;
       }
@@ -705,7 +681,7 @@ void loop(void) {
             
             if(1 <= m2StatCnt){
               if(0 == newInputState.m2Stat){
-                m2Bill = true;
+                m2CycleStarted = true;
                 m2PreviousMillis = currentMillis;
                 Serial.print("m2: COFFEE_1  ");Serial.println(m2DiffMillis, DEC);
                 m2CoffeeState = COFFEE_1;
@@ -807,7 +783,7 @@ void loop(void) {
       digitalWrite(m2CtrlPin, LOW);  // Disable machine's buttons
       log_user(m2Uid, "TRUE");  // Log user's UID, with authenticated=TRUE
       setLed(M2_LED, LED_OFF);
-      Serial.println("m2 state: MAIN_IDLE");
+      Serial.println(F("m2 state: MAIN_IDLE"));
       m2PreviousMillis = currentMillis;
       m2MainState = MAIN_IDLE;
       break;
@@ -842,7 +818,7 @@ bool check_rfid_uid(String uid){
   bool ret = false;
   Process check_user;
   
-  Serial.println("Check UID in registered user database");
+  Serial.println(F("Check UID in registered user database"));
   
   check_user.begin("python");
   check_user.addParameter("/mnt/sda1/python/check_user.py");
@@ -853,15 +829,15 @@ bool check_rfid_uid(String uid){
     String py_result = check_user.readString();
     py_result.trim(); // remove end of line
     if(py_result == "1"){
-      Serial.println("Registered user");
+      Serial.println(F("Registered user"));
       ret = true;
     }
     else if(py_result == "2"){
-      Serial.println("Unknown user");
+      Serial.println(F("Unknown user"));
       ret = false;
     }
     else {
-      Serial.println("An error occured:");
+      Serial.println(F("An error occured:"));
       Serial.print("  ");Serial.println(py_result);
       ret = false;
     }
@@ -885,12 +861,12 @@ bool log_user(String uid, String auth){
     String py_result = log_user.readString();
     py_result.trim(); // remove end of line
     if(py_result == "1"){
-      Serial.println("Entry logged to database.");
+      Serial.println(F("Entry logged to database."));
       ret = true;
     }
     else {
-      Serial.print("Error logging entry to database!");
-      Serial.print("  ");Serial.println(py_result);
+      Serial.print(F("Error logging entry to database!"));
+      Serial.print(F("  "));Serial.println(py_result);
       ret = false;
     }
   }
@@ -912,11 +888,11 @@ bool send_uid(String uid){
     String py_result = log_user.readString();
     py_result.trim(); // remove end of line
     if(py_result == "1"){
-      Serial.println("UID sent to form.");
+      Serial.println(F("UID sent to form."));
       ret = true;
     }
     else {
-      Serial.println("Error: invalid UID.");
+      Serial.println(F("Error: invalid UID."));
       ret = false;
     }
   }
