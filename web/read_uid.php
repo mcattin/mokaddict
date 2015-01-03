@@ -21,22 +21,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 <html>
 <head>
 <meta http-equiv="Content-Type" content="text/html; charset=ISO-8859-1">
-<title>MokAddict control panel</title>
+<title>MokAddict add UID</title>
 <link rel="stylesheet" type="text/css" href="mokaddict.css" />
 </head>
 <body>
 <?php
+
+
 $logo = "img/mokaddict_logo.png";
 echo '<img src="'.$logo.'" />';
-echo "<h1>Control panel</h1>";
+echo "<h1>Read UID and display</h1>";
+echo "<a href=index.php>Control panel</a><br/>";
 echo "<hr>";
-echo "<br><a href=view_user.php>User viewer</a>";
-echo "<br><a href=view_log.php>Log viewer</a>";
-echo "<br><a href=new_user.php>New user</a>";
-echo "<br><a href=read_uid.php>Read UID</a>";
-//echo "<br><a href=test.php>Test</a>";
+echo "<br/>";
+echo "<p>1) Press B, keep pressed.</p>";
+echo "<p>2) Press A and release both.</p>";
+echo "<p>3) Swipe the card.</p>";
+echo "<p>4) Refresh the page.</p>";
+echo "<br />";
 
-//phpinfo();
+// Get UID from file
+$file_path = getcwd()."/../python/rfid.txt";
+$f = fopen($file_path, "r+");
+$rfid = fgets($f);
+if(!$rfid){
+    $rfid = "???";
+}
+ftruncate($f, 0);
+fclose($f);
+
+echo "<p>RFID: ".$rfid."</p>";
 
 ?>
 </body>
