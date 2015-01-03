@@ -16,6 +16,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+error_reporting(0);
 
 function print_table_pdo($sth){
 
@@ -159,7 +160,7 @@ function add_user($dbh, $username, $first_name, $last_name, $email, $notify){
             $sth->bindParam(":email", $email, PDO::PARAM_STR);
             $sth->bindParam(":notify", $notify, PDO::PARAM_STR);
             $sth->execute();
-            print_r($dbh->errorInfo());
+            //print_r($dbh->errorInfo());
             return true;
         }
 
