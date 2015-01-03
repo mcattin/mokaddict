@@ -65,7 +65,7 @@ if(isset($col_names)){
             echo "<td>".$row[$i]."</td>";
         }
         echo "<td><a href=view_user_uids.php?user_id=".$row['id'].">view</a> ";
-        //echo "<a href=add_uid.php?user_id=".$row['id'].">add</a></td>";
+        echo "<a href=add_uid.php?user_id=".$row['id'].">add</a></td>";
         echo "<td><a href=view_user_detail.php?user_id=".$row['id'].">view</a></td>";
         $kfe_nb = get_kfe_nb($dbh, $row['id']);
         echo "<td align='center'><b>".$kfe_nb."</b></td>";
