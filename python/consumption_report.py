@@ -35,6 +35,7 @@ current_time = datetime.datetime.now().strftime("%Hh%Mm%Ss")
 db_file = "mokaddict.sqlite"
 report_file = os.path.dirname(os.path.abspath(__file__))+"/../backup/mokaddict.report."+current_date+".csv"
 sender = "matthieu.cattin@cern.ch"
+date_file = os.path.dirname(os.path.abspath(__file__))+"/last_report_date.txt"
 
 def send_mail(send_from, send_to, subject, text, files=[]):
     assert type(send_to)==list
@@ -62,10 +63,16 @@ def send_mail(send_from, send_to, subject, text, files=[]):
     smtp.starttls()
     # re-identify ourselves as an encrypted connection
     smtp.ehlo()
-    smtp.login("mokaddict@gmail.com", "M0k@ddict")
+    smtp.login("mokaddict@gmail.com", "MokaddictM@il")
     smtp.sendmail(send_from, send_to, msg.as_string())
     smtp.close()
 
+################################################################################
+# Save report date to file
+################################################################################
+f = open(date_file, 'w')
+f.write(current_date)
+f.close()
 
 ################################################################################
 # Backup database
@@ -100,7 +107,7 @@ f.close()
 # Send the csv file by email
 ################################################################################
 
-# Build list if users to notify
+# Build list of users to notify
 recipients = ["mokaddict@gmail.com"]
 for user in users:
     if("TRUE" == user[6]):
@@ -118,6 +125,5 @@ cur.execute('''DELETE FROM kfe_log''')
 db.commit()
 cur.close()
 db.close()
-
 
 sys.exit(1)
