@@ -50,12 +50,12 @@ const unsigned long coffeeWaitTimeout = 30000;
 const unsigned long coffeeWaitLongTimeout = 180000; // 3 minutes
 
 const unsigned long coffee_1_min = 10000;//10000;
-const unsigned long coffee_2_min = 5500;//5500;
-const unsigned long coffee_2_max = 6500;//6500;
+const unsigned long coffee_2_min = 5400;//5400;
+const unsigned long coffee_2_max = 6400;//6400;
 const unsigned long coffee_3_min = 1000;//1000
 const unsigned long coffee_3_max = 1500;//1500;
 const unsigned long coffee_4_min = 2500;//2500;
-const unsigned long coffee_4_max = 3500;//3500;
+const unsigned long coffee_4_max = 3000;//3000;
 /*
 //======================================
 // Values for manual test
