@@ -42,6 +42,13 @@ $first_name = $_POST["first_name"];
 $last_name = $_POST["last_name"];
 $email = $_POST["email"];
 $notify = $_POST["notify"];
+$password = $_POST["password"];
+
+// Get password from file
+$file_path = getcwd()."/mdp";
+$f = fopen($file_path, "r");
+$mdp = fgets($f);
+fclose($f);
 
 if($submit){
 
@@ -95,7 +102,7 @@ if($submit){
     if(0 != $err){
         print_form($username, $first_name, $last_name, $email, $notify);
     }
-    else{
+    else if(hash("sha512", $password) == $mdp){
         $dbh = open_db();
         if(add_user($dbh, $username, $first_name, $last_name, $email, $notify)){
             echo "<p>SUCCESS: User ".$usename." added.<br/>";
@@ -106,6 +113,10 @@ if($submit){
             print_form($username, $first_name, $last_name, $email, $notify);
         }
         close_db($dbh);
+    }
+    else{
+        echo "ERROR: Incorrect password.<br/>";
+        print_form($username, $first_name, $last_name, $email, $notify);
     }
 
 }
@@ -124,6 +135,8 @@ echo '    <p>email: <input type="text" name="email" value="'.$email.'" /><br /><
 echo '    <p>email notification:';
 echo '    <input type="radio" name="notify" value="FALSE" checked="checked" /> No';
 echo '    <input type="radio" name="notify" value="TRUE" /> Yes</p>';
+echo '    <p><br/></p>';
+echo '    <p>Password: <input type="password" name="password" value=""/><br /></p>';
 echo '    <p><input type="submit" name="submit" value="Register"></p>';
 echo '</form>';
 
