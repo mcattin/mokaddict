@@ -63,14 +63,21 @@ $rgx2 = "/^[A-Z0-9]{14}$/";
 
 if($submit){
 
+    // TODO
+    // Doesn't work, have to use uid_validate.php for now !!!
+
     $rfid = $_POST["rfid"];
     $password = $_POST["password"];
+
+    echo "<p>user id:".$user_id."<br />";
+    echo "<p>rfid:".$rfid."<br />";
+    echo "<p>password:".$password."<br />";
 
     if(hash("sha512", $password) == $mdp){
         if(preg_match($rgx1, $rfid) || preg_match($rgx2, $rfid)){
 
             $dbh = open_db();
-            $userinfo = get_userinfo($dbh, $user_id);
+            //$userinfo = get_userinfo($dbh, $user_id);
             if(add_user_uid($dbh, $user_id, $rfid, "TRUE")){
                 echo "<p>SUCCESS: UID=".$rfid." added to user=".$userinfo['username']."<br />";
                 echo "<a href=view_user_uids.php?user_id=".$user_id.">View ".$userinfo['username']." UIDs</a></p>";
@@ -109,7 +116,8 @@ else{
 
 function print_form($user_id, $rfid){
 
-echo "<form action='add_uid.php?user_id=".$user_id."' method='post'>";
+//echo "<form action='add_uid.php?user_id=".$user_id."' method='post'>";
+echo "<form action='uid_validate.php' method='post'>";
 echo "  <p>User ID: <input type='text' name='user_id' value=".$user_id." readonly='readonly'/><br /></p>";
 echo "  <p>RFID: <input type='text' name='rfid' value=".$rfid." readonly='readonly'/><br /></p>";
 echo '  <p><br/></p>';

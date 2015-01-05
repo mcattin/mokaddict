@@ -122,7 +122,7 @@ function add_user_uid($dbh, $user_id, $rfid, $auth){
         else{
             $sql = "INSERT INTO uids (user_id, rfid, authorised) VALUES (:userid, :rfid, :auth)";
             $sth = $dbh->prepare($sql);
-            $sth->bindParam(":userid", $user_id, PDO::PARAM_STR);
+            $sth->bindParam(":userid", $user_id, PDO::PARAM_INT);
             $sth->bindParam(":rfid", $rfid, PDO::PARAM_STR);
             $sth->bindParam(":auth", $auth, PDO::PARAM_STR);
             $sth->execute();

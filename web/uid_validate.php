@@ -31,7 +31,7 @@ include "utils.php";
 
 $user_id=$_POST['user_id'];
 $rfid = $_POST['rfid'];
-
+$password = $_POST["password"];
 
 $logo = "img/mokaddict_logo.png";
 echo '<img src="'.$logo.'" />';
@@ -40,26 +40,37 @@ echo "<a href=index.php>Control panel</a>";
 echo "<hr>";
 echo "<br/>";
 
+// Get password from file
+$file_path = getcwd()."/mdp";
+$f = fopen($file_path, "r");
+$mdp = fgets($f);
+fclose($f);
 
 $rgx1 = "/^[A-Z0-9]{8}$/";
 $rgx2 = "/^[A-Z0-9]{14}$/";
 
-if(preg_match($rgx1, $rfid) || preg_match($rgx2, $rfid)){
+if(hash("sha512", $password) == $mdp){
+    if(preg_match($rgx1, $rfid) || preg_match($rgx2, $rfid)){
 
-    $dbh = open_db();
-    $userinfo = get_userinfo($dbh, $user_id);
-    if(add_user_uid($dbh, $user_id, $rfid, "TRUE")){
-        echo "<p>SUCCESS: UID=".$rfid." added to user=".$userinfo['username']."<br />";
-        echo "<a href=view_user_uids.php?user_id=".$user_id.">View ".$userinfo['username']." UIDs</a></p>";
+        $dbh = open_db();
+        $userinfo = get_userinfo($dbh, $user_id);
+        if(add_user_uid($dbh, $user_id, $rfid, "TRUE")){
+            echo "<p>SUCCESS: UID=".$rfid." added to user=".$userinfo['username']."<br />";
+            echo "<a href=view_user_uids.php?user_id=".$user_id.">View ".$userinfo['username']." UIDs</a></p>";
+        }
+        else{
+            echo "<p>ERROR: UID already exists!<br />";
+            echo "<a href=add_uid.php?user_id=".$user_id.">Back</a></p>";
+        }
+        close_db($dbh);
     }
     else{
-        echo "<p>ERROR: UID already exists!<br />";
+        echo "<p>ERROR: Invalid UID format!<br />";
         echo "<a href=add_uid.php?user_id=".$user_id.">Back</a></p>";
     }
-    close_db($dbh);
 }
 else{
-    echo "<p>ERROR: Invalid UID format!<br />";
+    echo "ERROR: Incorrect password.<br/>";
     echo "<a href=add_uid.php?user_id=".$user_id.">Back</a></p>";
 }
 
