@@ -32,12 +32,6 @@ const int b1Pin = 11;
 const int b2Pin = 10;
 
 /**************************************************************************
- * Buzzer
- **************************************************************************/
-const long buzFreq = 1568;
-const long buzDuration = 100;
-
-/**************************************************************************
  * NFC shield
  **************************************************************************/
 Adafruit_NFCShield_I2C nfc(nfcIrqPin, nfcRstPin);
@@ -249,15 +243,15 @@ void setup(void) {
   
   digitalWrite(buzPin, LOW);
   
-  //tone(buzPin, buzFreq, buzDuration);
+  //tone(buzPin, NOTE_G6, buzDuration);
   setLed(M1_LED, LED_RED);
   setLed(M2_LED, LED_RED);
   delay(1000);
-  //tone(buzPin, buzFreq, buzDuration);
+  //tone(buzPin, NOTE_G6, buzDuration);
   setLed(M1_LED, LED_GREEN);
   setLed(M2_LED, LED_GREEN);
   delay(1000);
-  //tone(buzPin, buzFreq, buzDuration);
+  //tone(buzPin, NOTE_G6, buzDuration);
   setLed(M1_LED, LED_OFF);
   setLed(M2_LED, LED_OFF);
   
@@ -358,7 +352,7 @@ void loop(void) {
         
         // A card has been detected
         if(m1Uid != ""){
-          tone(buzPin, buzFreq, buzDuration);
+          tone(buzPin, NOTE_G6, buzDuration);
           if(send_uid(m1Uid)){
             rfid_reader_token = false;
             setLed(M1_LED, LED_OFF);
@@ -404,7 +398,7 @@ void loop(void) {
         if(m1Uid != ""){
           rfid_reader_token = false;
           setLed(M1_LED, LED_OFF);
-          tone(buzPin, buzFreq, buzDuration);
+          tone(buzPin, NOTE_G6, buzDuration);
           
           // Check if the user is registered
           if(check_rfid_uid(m1Uid)){
@@ -421,6 +415,7 @@ void loop(void) {
           else{
             // User is not registered
             setLed(M1_LED, LED_RED);
+            tone(buzPin, NOTE_G5, buzDurationLong);
             log_user(m1Uid, "FALSE");  // Log user's UID, with authenticated=FALSE
             Serial.println(F("m1 state: REJECTED"));
             m1PreviousMillis = currentMillis;
@@ -568,7 +563,7 @@ void loop(void) {
         if(m2Uid != ""){
           rfid_reader_token = false;
           setLed(M2_LED, LED_OFF);
-          tone(buzPin, buzFreq, buzDuration);
+          tone(buzPin, NOTE_G6, buzDuration);
           
           // Check if the user is registered
           if(check_rfid_uid(m2Uid)){
@@ -585,6 +580,7 @@ void loop(void) {
           else{
             // User is not registered
             setLed(M2_LED, LED_RED);
+            tone(buzPin, NOTE_G5, buzDurationLong);
             log_user(m2Uid, "FALSE");  // Log user's UID, with authenticated=FALSE
             Serial.println(F("m2 state: REJECTED"));
             m2PreviousMillis = currentMillis;

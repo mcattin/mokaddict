@@ -41,13 +41,17 @@ typedef enum {
 // Buffer
 const int timeBufferSize = 12;
 
+// Buzzer
+const long buzDuration = 100;
+const long buzDurationLong = 400;
+
 // Time
 const unsigned long ledBlinkInterval = 200;
 const unsigned long rejectedInterval = 4000;
 const unsigned long rfidWaitTimeout = 8000;
 const unsigned long bridgeTimeout = 3000;
-const unsigned long coffeeWaitTimeout = 30000;
-const unsigned long coffeeWaitLongTimeout = 180000; // 3 minutes
+const unsigned long coffeeWaitTimeout = 8000;
+const unsigned long coffeeWaitLongTimeout = 50000; // 1 minutes
 
 const unsigned long coffee_1_min = 10000;//10000;
 const unsigned long coffee_2_min = 5400;//5400;
