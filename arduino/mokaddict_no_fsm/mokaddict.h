@@ -55,7 +55,7 @@ const unsigned long coffeeWaitLongTimeout = 50000; // 1 minutes
 
 const unsigned long coffee_1_min = 10000;//10000;
 const unsigned long coffee_1_max = 50000;//50000; could be a solution to avoid detecting when machine is turning ON -> TO TEST when adding water
-const unsigned long coffee_2_min = 5400;//5400;
+const unsigned long coffee_2_min = 5200;//5200;
 const unsigned long coffee_2_max = 6500;//6500;
 const unsigned long coffee_3_min = 1000;//1000
 const unsigned long coffee_3_max = 1800;//1800;
