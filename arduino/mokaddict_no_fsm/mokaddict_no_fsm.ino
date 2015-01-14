@@ -12,6 +12,7 @@
 #include <Bridge.h>
 #include <Process.h>
 #include "mokaddict.h"
+#include "pitches.h"
 
 /**************************************************************************
  * Pin assigment
